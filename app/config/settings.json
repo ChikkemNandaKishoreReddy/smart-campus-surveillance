@@ -1,0 +1,10 @@
+{
+    "confidence": 0.3,
+    "camera_index": 0,
+    "save_screenshots": true,
+    "enable_logs": true,
+    "auto_refresh": false,
+    "refresh_interval": 30,
+    "database_path": "data/database/events.db",
+    "csv_path": "data/csv"
+}

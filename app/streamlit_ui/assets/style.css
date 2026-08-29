@@ -1,0 +1,18 @@
+.block-container{
+    padding-top:2rem;
+}
+
+div[data-testid="metric-container"]{
+    border-radius:12px;
+    border:1px solid #333;
+    padding:18px;
+}
+
+.stButton>button{
+    width:100%;
+    border-radius:10px;
+}
+
+h1{
+    color:white;
+}
