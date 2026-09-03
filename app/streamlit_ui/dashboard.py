@@ -1,17 +1,22 @@
 """
+Smart Campus Surveillance System
 Analytics Dashboard
 """
+
 import os
 import sys
-
-PROJECT_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..")
-)
-
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
-
 from pathlib import Path
+
+
+# ---------------------------------------------------------
+# Project Root
+# ---------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 
 import pandas as pd
 import streamlit as st
@@ -19,52 +24,72 @@ import streamlit as st
 from app.analytics.analytics import Analytics
 
 
-# ----------------------------------------------------
+# ---------------------------------------------------------
 # Page Configuration
-# ----------------------------------------------------
+# ---------------------------------------------------------
 
 st.set_page_config(
-    page_title="Smart Campus Surveillance",
-    page_icon="🎥",
+    page_title="Analytics | Smart Campus Surveillance",
+    page_icon="AN",
     layout="wide",
 )
 
-# ----------------------------------------------------
-# Dark Theme Styling
-# ----------------------------------------------------
+
+# ---------------------------------------------------------
+# Custom Styling
+# ---------------------------------------------------------
 
 st.markdown(
     """
     <style>
-        .main{
-            background-color:#0E1117;
-        }
 
-        h1,h2,h3,h4{
-            color:white;
-        }
+    .main {
+        background-color: #0E1117;
+    }
 
-        div[data-testid="metric-container"]{
-            background:#1E1E1E;
-            border-radius:10px;
-            padding:15px;
-        }
+    h1, h2, h3, h4 {
+        color: white;
+    }
+
+    div[data-testid="metric-container"] {
+        background: #1E1E1E;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
 )
 
+
+# ---------------------------------------------------------
+# Analytics Initialization
+# ---------------------------------------------------------
+
 analytics = Analytics()
 
 summary = analytics.dashboard_summary()
 
-st.title("🎥 Smart Campus Surveillance Dashboard")
 
-st.write("---")
+# ---------------------------------------------------------
+# Page Header
+# ---------------------------------------------------------
 
-# ----------------------------------------------------
+st.title("Smart Campus Surveillance Dashboard")
+
+st.write(
+    "System-wide surveillance statistics and event analytics."
+)
+
+st.divider()
+
+
+# ---------------------------------------------------------
 # KPI Cards
-# ----------------------------------------------------
+# ---------------------------------------------------------
+
+st.header("System Statistics")
 
 col1, col2, col3 = st.columns(3)
 
@@ -86,73 +111,139 @@ with col3:
         summary["unique_people"],
     )
 
-st.write("---")
 
-# ----------------------------------------------------
-# Charts
-# ----------------------------------------------------
+st.divider()
+
+
+# ---------------------------------------------------------
+# Analytics Charts
+# ---------------------------------------------------------
 
 st.header("Analytics Charts")
 
-analytics_path = Path("data/analytics")
+analytics_path = PROJECT_ROOT / "data" / "analytics"
 
-daily = analytics_path / "daily_events.png"
-hourly = analytics_path / "hourly_events.png"
-track = analytics_path / "track_statistics.png"
+daily_chart = analytics_path / "daily_events.png"
+hourly_chart = analytics_path / "hourly_events.png"
+track_chart = analytics_path / "track_statistics.png"
 
-c1, c2 = st.columns(2)
 
-with c1:
-    if daily.exists():
-        st.image(str(daily), use_container_width=True)
+chart_col1, chart_col2 = st.columns(2)
 
-    if hourly.exists():
-        st.image(str(hourly), use_container_width=True)
 
-with c2:
-    if track.exists():
-        st.image(str(track), use_container_width=True)
+with chart_col1:
 
-st.write("---")
+    if daily_chart.exists():
 
-# ----------------------------------------------------
+        st.subheader("Daily Events")
+
+        st.image(
+            str(daily_chart),
+            width="stretch",
+        )
+
+    if hourly_chart.exists():
+
+        st.subheader("Hourly Events")
+
+        st.image(
+            str(hourly_chart),
+            width="stretch",
+        )
+
+
+with chart_col2:
+
+    if track_chart.exists():
+
+        st.subheader("Track Statistics")
+
+        st.image(
+            str(track_chart),
+            width="stretch",
+        )
+
+
+if not any(
+    chart.exists()
+    for chart in [
+        daily_chart,
+        hourly_chart,
+        track_chart,
+    ]
+):
+
+    st.info(
+        "Analytics charts are not available yet. "
+        "Run the detection system to generate event data."
+    )
+
+
+st.divider()
+
+
+# ---------------------------------------------------------
 # Recent Events
-# ----------------------------------------------------
+# ---------------------------------------------------------
 
 st.header("Recent Intrusion Events")
 
 events = analytics.recent_events()
 
+
 if events:
-    df = pd.DataFrame(events)
-    st.dataframe(df, use_container_width=True)
+
+    dataframe = pd.DataFrame(events)
+
+    st.dataframe(
+        dataframe,
+        width="stretch",
+        hide_index=True,
+    )
+
 else:
-    st.info("No events found.")
 
-st.write("---")
+    st.info("No intrusion events have been recorded yet.")
 
-# ----------------------------------------------------
-# CSV Download
-# ----------------------------------------------------
 
-csv_path = Path("data/csv/events.csv")
+st.divider()
+
+
+# ---------------------------------------------------------
+# CSV Export
+# ---------------------------------------------------------
+
+st.header("Reports")
+
+csv_path = PROJECT_ROOT / "data" / "csv" / "events.csv"
+
 
 if csv_path.exists():
 
-    with open(csv_path, "rb") as file:
+    with open(csv_path, "rb") as csv_file:
 
         st.download_button(
-            label="📥 Download CSV Report",
-            data=file,
+            label="Download CSV Report",
+            data=csv_file,
             file_name="events.csv",
             mime="text/csv",
         )
 
-st.write("---")
+else:
 
-# ----------------------------------------------------
-# Refresh
-# ----------------------------------------------------
+    st.info(
+        "CSV report is not available yet. "
+        "Run the detection system to generate event data."
+    )
 
-if st.button("🔄 Refresh Dashboard"):
+
+st.divider()
+
+
+# ---------------------------------------------------------
+# Refresh Dashboard
+# ---------------------------------------------------------
+
+if st.button("Refresh Dashboard"):
+
     st.rerun()
