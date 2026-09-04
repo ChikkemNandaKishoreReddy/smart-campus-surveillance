@@ -1,4 +1,4 @@
-"""
+﻿"""
 YOLOv8 Detection Module
 
 Smart Campus Surveillance System
@@ -80,6 +80,10 @@ class YOLODetector:
         self.screenshot_manager = ScreenshotManager()
 
         self.event_manager = EventManager()
+        # Track IDs that have already generated an intrusion
+        # event during their current presence inside the
+        # restricted area.
+        self.active_intrusion_tracks = set()
 
         self.database = DatabaseManager()
 
@@ -134,7 +138,14 @@ class YOLODetector:
         intrusion_detected = False
         intrusion_track_id = None
 
+        # Track IDs currently visible inside the restricted area.
+        current_intrusion_tracks = set()
+
         if not results or results[0].boxes is None:
+            # No detections means no person is currently
+            # visible inside the restricted area.
+            self.active_intrusion_tracks.clear()
+
             return (
                 people_count,
                 intrusion_detected,
@@ -174,8 +185,13 @@ class YOLODetector:
             )
 
             if intrusion:
-                intrusion_detected = True
-                intrusion_track_id = track_id
+                current_intrusion_tracks.add(track_id)
+
+                # Only report an intrusion event when this
+                # track first enters the restricted area.
+                if track_id not in self.active_intrusion_tracks:
+                    intrusion_detected = True
+                    intrusion_track_id = track_id
 
             confidence = float(box.conf[0])
 
@@ -216,6 +232,20 @@ class YOLODetector:
                 -1,
             )
 
+        # Update active intrusion tracks.
+        #
+        # Tracks that are still inside remain active.
+        # Tracks that have left are removed so that a future
+        # re-entry can generate a new intrusion event.
+        self.active_intrusion_tracks.intersection_update(
+            current_intrusion_tracks
+        )
+
+        if intrusion_detected:
+            self.active_intrusion_tracks.add(
+                intrusion_track_id
+            )
+
         return (
             people_count,
             intrusion_detected,
@@ -232,8 +262,8 @@ class YOLODetector:
         Handle intrusion screenshot capture and database logging.
 
         Args:
-            frame: Current video frame.
-            intrusion_detected: Whether an intrusion occurred.
+            frame: Current OpenCV video frame.
+            intrusion_detected: Whether a new intrusion occurred.
             intrusion_track_id: Track ID responsible for intrusion.
         """
 
@@ -259,6 +289,9 @@ class YOLODetector:
                     event["screenshot"],
                 )
 
+        # Display the intrusion warning only when a new
+        # intrusion was detected in the current frame.
+        if intrusion_detected:
             cv2.putText(
                 frame,
                 "INTRUSION DETECTED",
@@ -268,11 +301,6 @@ class YOLODetector:
                 (0, 0, 255),
                 3,
             )
-
-        else:
-            # Allow a new screenshot event after
-            # the intrusion condition has ended.
-            self.screenshot_manager.reset()
 
     def _draw_interface(self, frame, people_count):
         """
