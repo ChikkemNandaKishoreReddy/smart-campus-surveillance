@@ -1,4 +1,4 @@
-"""
+﻿"""
 Settings Page
 """
 
@@ -9,7 +9,7 @@ from app.utils.settings_manager import SettingsManager
 
 st.set_page_config(
     page_title="Settings",
-    page_icon="⚙️",
+    page_icon="\u2699\uFE0F",
     layout="wide",
 )
 
@@ -25,7 +25,7 @@ settings = settings_manager.load()
 # Page Title
 # ---------------------------------------------------------
 
-st.title("⚙️ Settings")
+st.title("\u2699\uFE0F Settings")
 st.caption("Configure surveillance system preferences.")
 
 st.write("---")
@@ -105,7 +105,7 @@ st.write("---")
 # Save Button
 # ---------------------------------------------------------
 
-if st.button("💾 Save Settings", use_container_width=True):
+if st.button("\U0001F4BE Save Settings", width="stretch"):
 
     updated_settings = {
         "confidence": confidence,
@@ -120,7 +120,7 @@ if st.button("💾 Save Settings", use_container_width=True):
 
     settings_manager.save(updated_settings)
 
-    st.success("✅ Settings saved successfully!")
+    st.success("\u2705 Settings saved successfully!")
 
     settings = updated_settings
 

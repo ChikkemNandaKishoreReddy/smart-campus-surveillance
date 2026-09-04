@@ -1,4 +1,4 @@
-"""
+﻿"""
 Analytics Dashboard
 """
 
@@ -22,7 +22,7 @@ from app.analytics.analytics import Analytics
 
 st.set_page_config(
     page_title="Analytics",
-    page_icon="📊",
+    page_icon="\U0001F4CA",
     layout="wide",
 )
 
@@ -33,7 +33,7 @@ summary = analytics.dashboard_summary()
 # Title
 # ----------------------------------------------------
 
-st.title("📊 Analytics Dashboard")
+st.title("\U0001F4CA Analytics Dashboard")
 st.caption("Campus Surveillance Statistics")
 
 st.divider()
@@ -46,19 +46,19 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.metric(
-        "📄 Total Events",
+        "\U0001F4C4 Total Events",
         summary["total_events"],
     )
 
 with col2:
     st.metric(
-        "🚨 Intrusions",
+        "\U0001F6A8 Intrusions",
         summary["total_intrusions"],
     )
 
 with col3:
     st.metric(
-        "👤 Unique People",
+        "\U0001F464 Unique People",
         summary["unique_people"],
     )
 
@@ -68,7 +68,7 @@ with col4:
     )
 
     st.metric(
-        "📷 Screenshots",
+        "\U0001F4F7 Screenshots",
         screenshot_count,
     )
 
@@ -91,15 +91,15 @@ left, right = st.columns(2)
 with left:
 
     if daily.exists():
-        st.image(daily, use_container_width=True)
+        st.image(daily, width="stretch")
 
     if hourly.exists():
-        st.image(hourly, use_container_width=True)
+        st.image(hourly, width="stretch")
 
 with right:
 
     if track.exists():
-        st.image(track, use_container_width=True)
+        st.image(track, width="stretch")
 
 st.divider()
 
@@ -117,7 +117,7 @@ if events:
 
     st.dataframe(
         df,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -138,7 +138,7 @@ if csv_file.exists():
     with open(csv_file, "rb") as file:
 
         st.download_button(
-            "📥 Download CSV Report",
+            "\U0001F4E5 Download CSV Report",
             file,
             file_name="events.csv",
             mime="text/csv",
@@ -151,8 +151,8 @@ st.divider()
 # ----------------------------------------------------
 
 if st.button(
-    "🔄 Refresh Dashboard",
-    use_container_width=True,
+    "\U0001F504 Refresh Dashboard",
+    width="stretch",
 ):
 
     st.rerun()

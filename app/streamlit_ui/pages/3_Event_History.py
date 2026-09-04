@@ -1,4 +1,4 @@
-"""
+﻿"""
 Event History Page
 """
 
@@ -21,7 +21,7 @@ from app.analytics.analytics import Analytics
 
 analytics = Analytics()
 
-st.title("📋 Event History")
+st.title("\U0001F4CB Event History")
 
 st.caption("Search and review all surveillance events.")
 
@@ -99,7 +99,7 @@ st.subheader(
 
 st.dataframe(
     filtered,
-    use_container_width=True,
+    width="stretch",
 )
 
 st.write("---")
@@ -107,7 +107,7 @@ st.write("---")
 csv = filtered.to_csv(index=False).encode("utf-8")
 
 st.download_button(
-    "📥 Download Filtered CSV",
+    "\U0001F4E5 Download Filtered CSV",
     csv,
     "filtered_events.csv",
     "text/csv",

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Live Detection Page
 """
 
@@ -10,11 +10,11 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Live Detection",
-    page_icon="🎥",
+    page_icon="\U0001F3A5",
     layout="wide",
 )
 
-st.title("🎥 Live Detection")
+st.title("\U0001F3A5 Live Detection")
 
 st.write(
     "Start the real-time YOLOv8 surveillance system using the button below."
@@ -28,7 +28,7 @@ with col1:
 
     st.subheader("Detection Controls")
 
-    if st.button("▶ Start Detection", use_container_width=True):
+    if st.button("\u25B6 Start Detection", width="stretch"):
 
         project_root = Path(__file__).resolve().parents[3]
         main_file = project_root / "main.py"
